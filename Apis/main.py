@@ -90,7 +90,16 @@ def eliminar_usuario(cedula: int) -> dict:
             del user_db[index]
             return {"detail": "Usuario eliminado exitosamente."}
     raise HTTPException(status_code=404, detail="Usuario no encontrado.")
-            
+
+
+
+
+
+
+
+
+
+  
 
 class libro:
     codigo: float = Field(..., example=1)
