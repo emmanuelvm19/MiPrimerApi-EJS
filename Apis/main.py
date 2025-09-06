@@ -22,7 +22,10 @@ class Usuario(BaseModel):
     telefono: str = Field(None, example="4141234567")
     correo: str = Field(None, example="Juan.Pablo1234@gmail.com")
 
-user_db: List[Usuario] = []
+user_db: List[Usuario] = [
+    Usuario(cedula=1, nombre="Juan Pablo", telefono="4141234567", correo="Juan.Pablo1234@gmail.com"),
+    Usuario(cedula=2, nombre="Ana Torres", telefono="4147654321", correo="ana.torres@gmail.com")
+]
 
 @app.get("/usuarios",
          response_model=list[Usuario],
@@ -31,14 +34,32 @@ user_db: List[Usuario] = []
          tags=["Usuarios"],
             responses={
                 200: {"descripción": "Lista de usuarios obtenida exitosamente."},
-                404: {"description": "No se encontraron usuarios."}
+                404: {"descriptión": "No se encontraron usuarios."}
             } 
         )
+
+
 def get_usuarios() -> List[Usuario]:
     if not user_db:
         raise HTTPException(status_code=404, detail="No se encontraron usuarios.")
     return user_db
-    
+
+@app.get("/usuarios/{cedula}",
+         response_model=Usuario,
+         summary="Obtener el usuario mediante su cédula",
+         description="Obtiene la información de un usuario específico usando su cédula.",
+         tags=["Usuarios"],
+         responses={
+             200: {"description": "Usuario encontrado exitosamente."},
+             404: {"description": "Usuario no encontrado."}
+         }
+)
+def get_usuario_por_cedula(cedula: int) -> Usuario:
+    for usuario in user_db:
+        if usuario.cedula == cedula:
+            return usuario
+    raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
 @app.post("/usuarios", 
           status_code=201,
           summary="Crear un nuevo usuario", 
@@ -99,7 +120,6 @@ def eliminar_usuario(cedula: int) -> dict:
 
 
 
-  
 
 class libro:
     codigo: float = Field(..., example=1)
@@ -108,12 +128,12 @@ class libro:
     sinopsis: str = Field(..., example="Novela de Gabriel García Márquez")
     precio: float = Field(..., example = 50000)
 
-user_db: List[libro] = []
+libro_db: List[libro] = []
     
 #Ruta raiz
 @app.get("/")
 def read_root():
-    return {"Bienvenida": "Hola, bienvenido a la biblioteca (realizada con API rest)"}
+    return {"Bienvenida": "Hola, bienvenido a biblioteca (realizada con API rest)"}
 
 #Ruta con parametro
 @app.get("/items/{item_id}")
