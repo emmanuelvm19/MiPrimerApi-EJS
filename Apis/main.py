@@ -204,8 +204,8 @@ def crear_prestamo(prestamo: Prestamo):
          description="Actualiza la información de un prestamo existente en la biblioteca. Por medio del ID", 
          tags=["Prestamos"],
          responses={
-             200: {"description": "Usuario actualizado exitosamente."},
-             404: {"description": "Usuario no encontrado."}
+             200: {"description": "Prestamo actualizado exitosamente."},
+             404: {"description": "Prestamo no encontrado."}
             }
 )
 
@@ -222,16 +222,16 @@ def actualizar_prestamo(idPrestamo: int, prestamo_actualizado: Prestamo) -> Pres
             description="Elimina un prestamo del sistema.",
             tags=["Prestamos"],
             responses={
-                200: {"description": "Usuario eliminado exitosamente."},
-                404: {"description": "Usuario no encontrado."}
+                200: {"description": "Prestamo eliminado exitosamente."},
+                404: {"description": "Prestamo no encontrado."}
             }
 )
 def eliminar_prestamo(idPrestamo: int) -> dict:
     for index, cada_prestamo in enumerate(prestamos_db):
         if cada_prestamo.idPrestamo == idPrestamo:
             del prestamos_db[index]
-            return {"detail": "Usuario eliminado exitosamente."}
-    raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+            return {"detail": "Prestamo eliminado exitosamente."}
+    raise HTTPException(status_code=404, detail="Prestamo no encontrado.")
 
 
 
