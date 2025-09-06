@@ -164,7 +164,7 @@ prestamos_db: List[Prestamo] = [
             } 
         )
 
-def obtener_trasacciones (estado_prestamo: Optional[str] =
+def obtener_prestamos (estado_prestamo: Optional[str] =
                           Query(None, description="Filtrar por tipo de prestamo (Activo, Devuelto, Atrasado)")):
     if estado_prestamo:
         prestamos_filtrados = [p for p in prestamos_db if p.estadoPrestamo.lower() == estado_prestamo.lower()]
@@ -172,10 +172,10 @@ def obtener_trasacciones (estado_prestamo: Optional[str] =
             raise HTTPException(status_code=404, detail=f"No se encontraron transacciones con tipo: {estado_prestamo}")
         return prestamos_filtrados
     return prestamos_db
-#Para obtener todas las trasacciones /prestamos
-#Para obtener todas las trasacciones con un estado especifico /prestamos?estado_prestamo=Activo
+#Para obtener todas los prestamos /prestamos
+#Para obtener todas los prestamos con un estado especifico /prestamos?estado_prestamo=Activo
 
-@app.get("/prestamos/{id_prestamo}",
+@app.get("/prestamos/{id_Prestamo}",
          response_model=Prestamo,
          summary="Obtener los datos de un prestamo especifico",
          description="Retorna la información de un prestamo. Permite filtrar por el ID del prestamo.",
@@ -187,20 +187,71 @@ def obtener_trasacciones (estado_prestamo: Optional[str] =
          )
 
 
-def obtener_prestamo(id_prestamo: int):
+def obtener_prestamo(idPrestamo: int):
     for prestamo in prestamos_db:
-        if prestamo.idPrestamo == id_prestamo:
+        if prestamo.idPrestamo == idPrestamo:
             print("DEBUG →", prestamo)
             return prestamo
     raise HTTPException(status_code=404, detail="Prestamo no encontrado")
 #Para obtener el registro de un prestamos con un id especifico /prestamos/1
 
 
+@app.post("/prestamos", 
+          status_code=201,
+          summary="Crear un prestamo", 
+          description="Crea un nuevo prestamo de algún libro.", 
+          tags=["Prestamos"],
+          responses={
+              201: {"description": "Prestamo creado exitosamente."},
+              400: {"description": "Error en la creación del prestamo, prestamo ya existe en los registros."}
+            })
 
 
+def crear_prestamo(prestamo: Prestamo):
+    # Verificar que no exista ya
+    for p in prestamos_db:
+        if p.idPrestamo == prestamo.idPrestamo:
+            raise HTTPException(status_code=400, detail=f"Ya existe un prestamo con ID {prestamo.idPrestamo}")
+    prestamos_db.append(prestamo)
+    return prestamo
 
 
-    
+@app.put("/prestamos/{id_Prestamo}", 
+         response_model=Prestamo,
+         summary="Actualizar un prestamo existente", 
+         description="Actualiza la información de un prestamo existente en la biblioteca. Por medio del ID", 
+         tags=["Prestamos"],
+         responses={
+             200: {"description": "Usuario actualizado exitosamente."},
+             404: {"description": "Usuario no encontrado."}
+            }
+)
+
+def actualizar_prestamo(idPrestamo: int, prestamo_actualizado: Prestamo) -> Prestamo:
+    for index, cada_prestamo in enumerate(prestamos_db):
+        if cada_prestamo.idPrestamo == idPrestamo:
+            prestamos_db[index] = prestamo_actualizado
+            return prestamo_actualizado
+    raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+@app.delete("/prestamos/{id_Prestamo}", 
+            response_model=Prestamo,
+            summary="Eliminar un prestamo",
+            description="Elimina un prestamo del sistema.",
+            tags=["Prestamos"],
+            responses={
+                200: {"description": "Usuario eliminado exitosamente."},
+                404: {"description": "Usuario no encontrado."}
+            }
+)
+def eliminar_prestamo(idPrestamo: int) -> dict:
+    for index, cada_prestamo in enumerate(prestamos_db):
+        if cada_prestamo.idPrestamo == idPrestamo:
+            del prestamos_db[index]
+            return {"detail": "Usuario eliminado exitosamente."}
+    raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+
 #Ruta raiz
 @app.get("/")
 def read_root():
@@ -212,6 +263,7 @@ def read_root():
                 "prestamos":"/prestamos",
                 "documentacion swagger":"/docs"
             }}
+
 
 
 #Ruta con parametro
