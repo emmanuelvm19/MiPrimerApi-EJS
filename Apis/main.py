@@ -4,11 +4,11 @@ app = FastAPI()
 #Ruta raiz
 @app.get("/")
 def read_root():
-    return {"Mensaje": "Hola bienvenido a la API de FastAPI"}
+    return {"Bienvenida": "Hola, bienvenido a la biblioteca (realizada con API rest)"}
 
 #Ruta con parametro
 @app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "Nombre": q}
+def read_item(libro_id: int, q: str = None):
+    return {"item_id": libro_id, "Titulo": q}
 
 
