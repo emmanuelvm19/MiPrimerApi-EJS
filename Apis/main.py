@@ -2,6 +2,24 @@ from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import date
+from sqlalchemy import text
+from Databases.conexion import engine
+
+try:
+    with engine.connect() as conn:
+        result = conn.execute(text("SELECT name FROM sys.databases"))
+        print("✅ Conexión exitosa a SQL Server")
+        for row in result:
+            print(f" - {row.name}")
+except Exception as e:
+    print(f"❌ Error de conexión: {e}")
+
+finally:
+    conn.close()
+    print("Conexion cerrada")
+
+
+
 
 app = FastAPI(
     title="API Biblioteca",
